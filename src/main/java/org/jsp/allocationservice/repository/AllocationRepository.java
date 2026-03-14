@@ -1,6 +1,6 @@
-package com.jsp.allocation.repository;
+package org.jsp.allocationservice.repository;
 
-import com.jsp.allocation.entity.AllocationEntity;
+import org.jsp.allocationservice.entity.AllocationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

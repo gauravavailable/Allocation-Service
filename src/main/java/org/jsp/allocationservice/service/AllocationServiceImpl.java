@@ -1,9 +1,10 @@
-package com.jsp.allocation.service;
+package org.jsp.allocationservice.service;
 
-import com.jsp.allocation.dto.AppResponseDTO;
-import com.jsp.allocation.entity.AllocationEntity;
-import com.jsp.allocation.repository.AllocationRepository;
+import org.jsp.allocationservice.dto.AppResponseDTO;
+import org.jsp.allocationservice.entity.AllocationEntity;
+import org.jsp.allocationservice.repository.AllocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -14,10 +15,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Service
 public class AllocationServiceImpl implements AllocationService {
 
     @Autowired
-    AllocationRepository allocationRepositroy;
+    AllocationRepository allocationRepository;
 
     @Override
     public AppResponseDTO processAllocation(List<Map<String, Object>> allocationList) {
@@ -28,7 +30,7 @@ public class AllocationServiceImpl implements AllocationService {
             entityList = allocationList.stream()
                     .flatMap(map -> {
 
-                        Integer frequency =
+                        int frequency =
                                 map.get("frequency") != null ? (Integer) map.get("frequency") : 5;
 
                         LocalDate date = (LocalDate) map.get("grantDate");
@@ -46,11 +48,12 @@ public class AllocationServiceImpl implements AllocationService {
                                     entity.setModificationDate(null);
                                     entity.setCreationDate(new Date());
 
+
                                     return entity;
                                 });
                     }).collect(Collectors.toList());
 
-            allocationRepositroy.saveAll(entityList);
+            allocationRepository.saveAll(entityList);
 
             return new AppResponseDTO("200", null, "SUCCESS", entityList);
 
@@ -89,8 +92,15 @@ public class AllocationServiceImpl implements AllocationService {
             }
         }
 
-        allocationRepositroy.saveAll(entityList);
+        allocationRepository.saveAll(entityList);
 
         return new AppResponseDTO("200", null, "SUCCESS", entityList);
     }
+
+    @Override
+    public AppResponseDTO get(BigInteger planId) {
+        return null;
+    }
+
 }
+

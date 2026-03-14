@@ -1,7 +1,8 @@
-package com.jsp.allocation.service;
+package org.jsp.allocationservice.service;
 
-import com.jsp.allocation.dto.AppResponseDTO;
+import org.jsp.allocationservice.dto.AppResponseDTO;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -11,4 +12,5 @@ public interface AllocationService {
 
     public AppResponseDTO preparedAllocation(List<Map<String,Object>> grantMapList);
 
+    public AppResponseDTO get(BigInteger planId);
 }

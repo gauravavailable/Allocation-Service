@@ -1,16 +1,13 @@
-package com.jsp.allocation.entity;
+package org.jsp.allocationservice.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
-
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.Date;
 
-@Data
 @Entity
+@Data
 @Table(name = "allocation_master")
 public class AllocationEntity {
 
@@ -25,10 +22,10 @@ public class AllocationEntity {
     private Double allocationNumber;
 
     @Column(name = "Planned_Allocation_Date")
-    private Date PlannedAllocationDate;
+    private LocalDate plannedAllocationDate;
 
     @Column(name = "allocation_year")
-    private String allocationYear;
+    private Integer allocationYear;
 
     @Column(name = "Status")
     private String status;

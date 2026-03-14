@@ -1,8 +1,8 @@
-package com.jsp.allocation.controller;
+package org.jsp.allocationservice.controller;
 
-import com.jsp.allocation.dto.AllocationDTO;
-import com.jsp.allocation.dto.AppResponseDTO;
-import com.jsp.allocation.service.AllocationService;
+import org.jsp.allocationservice.dto.AppResponseDTO;
+import org.jsp.allocationservice.service.AllocationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +13,7 @@ import java.util.Map;
 @RestController
 public class AllocationController {
 
+    @Autowired
     private AllocationService allocationService;
 
     @RequestMapping(value = "/uploadGrants")

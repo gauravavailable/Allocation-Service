@@ -1,4 +1,4 @@
-package com.jsp.allocation.dto;
+package org.jsp.allocationservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

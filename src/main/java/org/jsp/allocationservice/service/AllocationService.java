@@ -12,5 +12,5 @@ public interface AllocationService {
 
     public AppResponseDTO preparedAllocation(List<Map<String,Object>> grantMapList);
 
-    public AppResponseDTO get(BigInteger planId);
+    public AppResponseDTO getAllocatedGrantsByPlanId(BigInteger planId);
 }

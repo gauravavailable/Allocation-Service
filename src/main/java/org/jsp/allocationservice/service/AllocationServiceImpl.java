@@ -1,17 +1,19 @@
 package org.jsp.allocationservice.service;
 
+import jakarta.annotation.PostConstruct;
 import org.jsp.allocationservice.dto.AppResponseDTO;
 import org.jsp.allocationservice.entity.AllocationEntity;
 import org.jsp.allocationservice.repository.AllocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -20,6 +22,30 @@ public class AllocationServiceImpl implements AllocationService {
 
     @Autowired
     AllocationRepository allocationRepository;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    RestTemplate restTemplate;
+
+    @PostConstruct
+    public void getGrantsForAllocation(){
+        String url = "http://localhost:8080/ESOP/getGrantsByPlanId/100/ACTIVE/PENDING";
+        ResponseEntity<AppResponseDTO> response = restTemplate.exchange(url, HttpMethod.GET, null, AppResponseDTO.class);
+        AppResponseDTO body = response.getBody();
+        System.out.println(body.getData());
+    }
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public AppResponseDTO processAllocation(List<Map<String, Object>> allocationList) {
@@ -98,9 +124,25 @@ public class AllocationServiceImpl implements AllocationService {
     }
 
     @Override
-    public AppResponseDTO get(BigInteger planId) {
-        return null;
+    public AppResponseDTO getAllocatedGrantsByPlanId(BigInteger planId) {
+            try {
+                String sql = "SELECT am.grant_id, SUM(am.allocation_number) AS total_allocation " +
+                        "FROM allocation_master am " +
+                        "LEFT OUTER JOIN Grant_entity g ON g.alt_key = am.grant_id " +
+                        "WHERE g.plan_Id = ? " +
+                        "AND am.status = 'APPROVED' " +
+                        "GROUP BY am.grant_id";
+
+                List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, planId);
+                if(!rows.isEmpty()){
+                    return new AppResponseDTO("200",null, "SUCCESS", rows);
+                }
+            }catch (Exception e){
+                return new AppResponseDTO("500",e.getMessage(),"FAILURE",null);
+            }
+            return null;
+        }
     }
 
-}
+
 

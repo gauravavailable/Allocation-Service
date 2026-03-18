@@ -8,9 +8,13 @@ import java.util.Map;
 
 public interface AllocationService {
 
-    public AppResponseDTO processAllocation(List<Map<String,Object>> allocationList);
+    public AppResponseDTO processAllocation(List<Map<String, Object>> allocationList);
 
-    public AppResponseDTO preparedAllocation(List<Map<String,Object>> grantMapList);
+    public AppResponseDTO preparedAllocation(List<Map<String, Object>> grantMapList);
 
     public AppResponseDTO getAllocatedGrantsByPlanId(BigInteger planId);
+
+    public void updateAllocatedGrantsStatus(List<BigInteger> grantIdList);
+
+
 }

@@ -5,6 +5,7 @@ import org.jsp.allocationservice.dto.AppResponseDTO;
 import org.jsp.allocationservice.entity.AllocationEntity;
 import org.jsp.allocationservice.repository.AllocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,21 +31,26 @@ public class AllocationServiceImpl implements AllocationService {
     RestTemplate restTemplate;
 
     @PostConstruct
-    public void getGrantsForAllocation(){
+    public void init() {
+        BigInteger planId = getActivePlan();
+        getGrantsForAllocation(planId);
+    }
+
+    public BigInteger getActivePlan() {
+        String url = "http://localhost:8080/ESOP/getActivePlan";
+        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, null, Map.class);
+        Map<String, Object> planMap = (Map) response.getBody().get("Data");
+        return new BigInteger(planMap.get("altkey").toString());
+    }
+
+
+    @PostConstruct
+    public void getGrantsForAllocation(BigInteger planId) {
         String url = "http://localhost:8080/ESOP/getGrantsByPlanId/100/ACTIVE/PENDING";
         ResponseEntity<AppResponseDTO> response = restTemplate.exchange(url, HttpMethod.GET, null, AppResponseDTO.class);
         AppResponseDTO body = response.getBody();
         System.out.println(body.getData());
     }
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -125,24 +131,33 @@ public class AllocationServiceImpl implements AllocationService {
 
     @Override
     public AppResponseDTO getAllocatedGrantsByPlanId(BigInteger planId) {
-            try {
-                String sql = "SELECT am.grant_id, SUM(am.allocation_number) AS total_allocation " +
-                        "FROM allocation_master am " +
-                        "LEFT OUTER JOIN Grant_entity g ON g.alt_key = am.grant_id " +
-                        "WHERE g.plan_Id = ? " +
-                        "AND am.status = 'APPROVED' " +
-                        "GROUP BY am.grant_id";
+        try {
+            String sql = "SELECT am.grant_id, SUM(am.allocation_number) AS total_allocation " +
+                    "FROM allocation_master am " +
+                    "LEFT OUTER JOIN Grant_entity g ON g.alt_key = am.grant_id " +
+                    "WHERE g.plan_Id = ? " +
+                    "AND am.status = 'APPROVED' " +
+                    "GROUP BY am.grant_id";
 
-                List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, planId);
-                if(!rows.isEmpty()){
-                    return new AppResponseDTO("200",null, "SUCCESS", rows);
-                }
-            }catch (Exception e){
-                return new AppResponseDTO("500",e.getMessage(),"FAILURE",null);
+            List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, planId);
+            if (!rows.isEmpty()) {
+                return new AppResponseDTO("200", null, "SUCCESS", rows);
             }
-            return null;
+        } catch (Exception e) {
+            return new AppResponseDTO("500", e.getMessage(), "FAILURE", null);
         }
+        return null;
     }
+
+    @Override
+    public void updateAllocatedGrantsStatus(List<BigInteger> grantIdList) {
+        String url = "http://localhost:8080/ESOP/updateAllocatedGrantsStatus";
+        HttpEntity<List<BigInteger>> listHttpEntity = new HttpEntity<>(grantIdList);
+        ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.POST, listHttpEntity, List.class);
+
+    }
+
+}
 
 
 

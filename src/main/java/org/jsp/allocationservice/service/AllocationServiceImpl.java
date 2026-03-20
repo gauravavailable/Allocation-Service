@@ -59,31 +59,28 @@ public class AllocationServiceImpl implements AllocationService {
 
             List<AllocationEntity> entityList = new ArrayList<>();
 
-            entityList = allocationList.stream()
-                    .flatMap(map -> {
+            entityList = allocationList.stream().flatMap(map -> {
 
-                        int frequency =
-                                map.get("frequency") != null ? (Integer) map.get("frequency") : 5;
+                int frequency = map.get("frequency") != null ? (Integer) map.get("frequency") : 5;
 
-                        LocalDate date = (LocalDate) map.get("grantDate");
+                LocalDate date = (LocalDate) map.get("grantDate");
 
-                        return IntStream.range(0, frequency)
-                                .mapToObj(i -> {
+                return IntStream.range(0, frequency).mapToObj(i -> {
 
-                                    AllocationEntity entity = new AllocationEntity();
-                                    entity.setStatus("PENDING");
+                    AllocationEntity entity = new AllocationEntity();
+                    entity.setStatus("PENDING");
 
-                                    LocalDate nextDate = date.plusDays(i + 1);
+                    LocalDate nextDate = date.plusDays(i + 1);
 
-                                    entity.setPlannedAllocationDate(nextDate);
-                                    entity.setAllocationYear(nextDate.getYear());
-                                    entity.setModificationDate(null);
-                                    entity.setCreationDate(new Date());
+                    entity.setPlannedAllocationDate(nextDate);
+                    entity.setAllocationYear(nextDate.getYear());
+                    entity.setModificationDate(null);
+                    entity.setCreationDate(new Date());
 
 
-                                    return entity;
-                                });
-                    }).collect(Collectors.toList());
+                    return entity;
+                });
+            }).collect(Collectors.toList());
 
             allocationRepository.saveAll(entityList);
 
@@ -132,12 +129,7 @@ public class AllocationServiceImpl implements AllocationService {
     @Override
     public AppResponseDTO getAllocatedGrantsByPlanId(BigInteger planId) {
         try {
-            String sql = "SELECT am.grant_id, SUM(am.allocation_number) AS total_allocation " +
-                    "FROM allocation_master am " +
-                    "LEFT OUTER JOIN Grant_entity g ON g.alt_key = am.grant_id " +
-                    "WHERE g.plan_Id = ? " +
-                    "AND am.status = 'APPROVED' " +
-                    "GROUP BY am.grant_id";
+            String sql = "SELECT am.grant_id, SUM(am.allocation_number) AS total_allocation " + "FROM allocation_master am " + "LEFT OUTER JOIN Grant_entity g ON g.alt_key = am.grant_id " + "WHERE g.plan_Id = ? " + "AND am.status = 'APPROVED' " + "GROUP BY am.grant_id";
 
             List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, planId);
             if (!rows.isEmpty()) {

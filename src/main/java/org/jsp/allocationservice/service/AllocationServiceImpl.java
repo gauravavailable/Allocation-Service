@@ -37,16 +37,6 @@ public class AllocationServiceImpl implements AllocationService {
         System.out.println(body.getData());
     }
 
-
-
-
-
-
-
-
-
-
-
     @Override
     public AppResponseDTO processAllocation(List<Map<String, Object>> allocationList) {
         try {
